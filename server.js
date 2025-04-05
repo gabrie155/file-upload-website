@@ -28,15 +28,14 @@ const storage = multer.diskStorage({
   }
 });
 
-// Increase file size limit to 3 GB (3 * 1024 * 1024 * 1024 bytes)
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 3 * 1024 * 1024 * 1024 }, // 3 GB limit
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit
   fileFilter: (req, file, cb) => {
     const filetypes = /jpeg|jpg|png|gif|mp4|mov|avi|mp3|wav|ogg|zip|rar|7z/;
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = filetypes.test(file.mimetype);
-
+    
     if (extname && mimetype) {
       return cb(null, true);
     } else {
@@ -71,7 +70,7 @@ app.post('/upload', upload.array('files'), (req, res) => {
 // Get list of uploaded files
 app.get('/files', (req, res) => {
   const uploadDir = path.join(__dirname, 'temp-uploads');
-
+  
   fs.readdir(uploadDir, (err, files) => {
     if (err) {
       console.error('Error reading upload directory:', err);
