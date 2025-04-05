@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gabe's Website</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        header {
+            background-color: #4caf50;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Tabs Styling */
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .tab-button:hover {
+            background-color: #45a049;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* File Upload Section */
+        .file-upload {
+            margin-top: 20px;
+        }
+        .file-upload input[type="file"] {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        /* Progress Bar Styling */
+        progress {
+            width: 100%;
+            height: 20px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 10px;
+            appearance: none;
+        }
+        progress::-webkit-progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+        }
+        progress::-webkit-progress-value {
+            background-color: #4caf50;
+            border-radius: 10px;
+        }
+        progress::-moz-progress-bar {
+            background-color: #4caf50;
+            border-radius: 10px;
+        }
+        /* Footer Styling */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 10px 0;
+            background-color: #4caf50;
+            color: white;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        a {
+            color: #4caf50;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        /* Media Player Styling */
+        audio, video {
+            margin-top: 10px;
+            max-width: 100%;
+            display: block;
+        }
+        /* File List Styling */
+        .file-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .file-name {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .file-type {
+            color: #666;
+            font-size: 0.8em;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .upload-button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .upload-button:hover {
+            background-color: #45a049;
+        }
+        .error-message {
+            color: #f44336;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>Gabe's Website</h1>
+    </header>
+    <!-- Main Content -->
+    <main>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button" onclick="showTab('about')">About Me</button>
+            <button class="tab-button" onclick="showTab('upload')">Upload Files</button>
+        </div>
+        <!-- About Me Tab -->
+        <div id="about" class="tab-content active">
+            <p>Thank you for visiting my website. Here's some information about me:</p>
+            <ul>
+                <li><strong>Name:</strong> Gabe</li>
+                <li><strong>Profession:</strong> Web Developer</li>
+                <li><strong>Hobbies:</strong> Coding, Gaming, and Exploring New Technologies</li>
+            </ul>
+            <p>If you'd like to learn more, feel free to check out my <a href="https://github.com" target="_blank">GitHub Profile</a>.</p>
+        </div>
+        <!-- Upload Files Tab -->
+        <div id="upload" class="tab-content">
+            <h3>Upload Files</h3>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <div class="file-upload">
+                    <input type="file" name="files" id="fileInput" 
+                           accept=".zip,.rar,.7z,.mp3,.wav,.ogg,.mp4,.mov,.avi" multiple />
+                    <button type="button" class="upload-button" onclick="uploadFiles()">Upload</button>
+                </div>
+                <progress id="uploadProgress" value="0" max="100" style="display: none;"></progress>
+                <div id="uploadStatus" class="error-message"></div>
+            </form>
+            <h4>Uploaded Files</h4>
+            <div id="uploadedFiles"></div>
+        </div>
+    </main>
+    <!-- Footer -->
+    <footer>
+        &copy; <span id="currentYear"></span> Gabe's Website. All rights reserved.
+    </footer>
+    <script>
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Tab Switching Logic
+        function showTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            // Fetch uploaded files if the "Upload Files" tab is active
+            if (tabId === 'upload') {
+                fetchUploadedFiles();
+            }
+        }
+
+        // Upload files with progress tracking
+        function uploadFiles() {
+            const fileInput = document.getElementById('fileInput');
+            const progressBar = document.getElementById('uploadProgress');
+            const statusDiv = document.getElementById('uploadStatus');
+            
+            if (fileInput.files.length === 0) {
+                statusDiv.textContent = 'Please select at least one file to upload.';
+                return;
+            }
+
+            statusDiv.textContent = '';
+            progressBar.style.display = 'block';
+            
+            const formData = new FormData();
+            for (let i = 0; i < fileInput.files.length; i++) {
+                formData.append('files', fileInput.files[i]);
+            }
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/upload', true);
+            
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const percentComplete = (e.loaded / e.total) * 100;
+                    progressBar.value = percentComplete;
+                }
+            };
+            
+            xhr.onload = function() {
+                progressBar.style.display = 'none';
+                if (xhr.status === 200) {
+                    statusDiv.textContent = 'Upload successful!';
+                    statusDiv.style.color = '#4caf50';
+                    fetchUploadedFiles();
+                    fileInput.value = ''; // Clear file input
+                } else {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        statusDiv.textContent = response.error || 'Upload failed.';
+                    } catch {
+                        statusDiv.textContent = 'Upload failed.';
+                    }
+                    statusDiv.style.color = '#f44336';
+                }
+            };
+            
+            xhr.onerror = function() {
+                progressBar.style.display = 'none';
+                statusDiv.textContent = 'Upload failed. Please try again.';
+                statusDiv.style.color = '#f44336';
+            };
+            
+            xhr.send(formData);
+        }
+
+        // Fetch and display uploaded files with better organization
+        function fetchUploadedFiles() {
+            fetch('/files')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(files => {
+                    const uploadedFilesDiv = document.getElementById('uploadedFiles');
+                    uploadedFilesDiv.innerHTML = '';
+                    
+                    if (files.length === 0) {
+                        uploadedFilesDiv.textContent = 'No files uploaded yet.';
+                        return;
+                    }
+                    
+                    // Group files by type for better organization
+                    const groupedFiles = {
+                        audio: [],
+                        video: [],
+                        archives: [],
+                        other: []
+                    };
+                    
+                    files.forEach(file => {
+                        const ext = file.name.split('.').pop().toLowerCase();
+                        if (['mp3', 'wav', 'ogg'].includes(ext)) {
+                            groupedFiles.audio.push(file);
+                        } else if (['mp4', 'mov', 'avi'].includes(ext)) {
+                            groupedFiles.video.push(file);
+                        } else if (['zip', 'rar', '7z'].includes(ext)) {
+                            groupedFiles.archives.push(file);
+                        } else {
+                            groupedFiles.other.push(file);
+                        }
+                    });
+                    
+                    // Display files in categories
+                    for (const [category, categoryFiles] of Object.entries(groupedFiles)) {
+                        if (categoryFiles.length > 0) {
+                            const categoryDiv = document.createElement('div');
+                            const categoryTitle = document.createElement('h5');
+                            categoryTitle.textContent = `${category.charAt(0).toUpperCase() + category.slice(1)} Files (${categoryFiles.length})`;
+                            categoryDiv.appendChild(categoryTitle);
+                            
+                            const fileList = document.createElement('div');
+                            categoryFiles.forEach(file => {
+                                const fileItem = document.createElement('div');
+                                fileItem.className = 'file-item';
+                                
+                                const link = document.createElement('a');
+                                link.href = file.url;
+                                link.textContent = file.name;
+                                link.className = 'file-name';
+                                link.target = '_blank';
+                                
+                                const typeSpan = document.createElement('span');
+                                typeSpan.className = 'file-type';
+                                typeSpan.textContent = `Type: ${file.name.split('.').pop().toUpperCase()}`;
+                                
+                                fileItem.appendChild(link);
+                                fileItem.appendChild(typeSpan);
+                                
+                                // Add appropriate player based on file type
+                                const ext = file.name.split('.').pop().toLowerCase();
+                                if (['mp3', 'wav', 'ogg'].includes(ext)) {
+                                    const audioPlayer = document.createElement('audio');
+                                    audioPlayer.controls = true;
+                                    audioPlayer.src = file.url;
+                                    fileItem.appendChild(audioPlayer);
+                                } else if (['mp4', 'mov', 'avi'].includes(ext)) {
+                                    const videoPlayer = document.createElement('video');
+                                    videoPlayer.controls = true;
+                                    videoPlayer.src = file.url;
+                                    videoPlayer.preload = 'metadata';
+                                    videoPlayer.style.maxWidth = '100%';
+                                    fileItem.appendChild(videoPlayer);
+                                }
+                                
+                                fileList.appendChild(fileItem);
+                            });
+                            
+                            categoryDiv.appendChild(fileList);
+                            uploadedFilesDiv.appendChild(categoryDiv);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching uploaded files:', error);
+                    document.getElementById('uploadedFiles').innerHTML = 
+                        '<div class="error-message">Failed to load uploaded files. Please try again later.</div>';
+                });
+        }
+
+        // Initial fetch if the "Upload Files" tab is active
+        if (document.querySelector('#upload.active')) {
+            fetchUploadedFiles();
+        }
+    </script>
+</body>
+</html>
